@@ -74,6 +74,7 @@ class multisite_general_functions_Admin {
 		 */
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/multisite-general-functions-admin.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name.'-boostrap-min', 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css', array(), $this->version, 'all' );
 
 	}
 
@@ -97,6 +98,7 @@ class multisite_general_functions_Admin {
 		 */
 
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/multisite-general-functions-admin.js', array( 'jquery' ), $this->version, false );
+		// wp_enqueue_script( $this->plugin_name.'-boostrap', 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js', array( 'jquery' ), $this->version, true );
 
 	}
 
@@ -131,7 +133,7 @@ class multisite_general_functions_Admin {
 	public function paypal_save_settings(){
 
 		check_admin_referer( 'PP-network-validate' ); // Nonce security check
-	 
+
 		$ppOptions = [];
 		
 		$fields = [
@@ -141,6 +143,8 @@ class multisite_general_functions_Admin {
 
 		$checkfields = ['enabled', 'testmode', 'debug', 'ipn_notification', 'send_shipping', 'address_override'];
 
+		// var_dump($_POST);
+		// echo '<br/><br/><br/>';
 		foreach ($fields as $field) {
 			if(isset($_POST['woocommerce_paypal_'.$field]) && in_array($field, $checkfields) ){
 				$ppOptions[$field] = 'yes';
@@ -152,22 +156,70 @@ class multisite_general_functions_Admin {
 		}
 		// var_dump($ppOptions);
 		// wp_die();
+
 		update_site_option( 'general_woocommerce_paypal_settings', $ppOptions );
-		// update_site_option( 'some_checkbox', $_POST['some_checkbox'] );
 
 		//I have override different site option table based on the every site
-		$this->updateOptionsThroughOutSites($ppOptions);
+		$this->updateOptionsThroughOutSites($ppOptions, 'woocommerce_paypal_settings');
 	 
 		wp_redirect( add_query_arg( array(
 			'page' => 'custom-generic-settings-page',
-			'updated' => true ), network_admin_url('themes.php')
+			'updated' => true ), network_admin_url('admin.php')
 		));
 	 
 		exit;
 	 
 	}
 
-	public function updateOptionsThroughOutSites($options)
+	public function stripe_save_settings(){
+
+		check_admin_referer( 'Stripe-network-validate' ); // Nonce security check
+
+		$stripeOptions = [];
+		
+		// var_dump($_POST);
+		// echo '<br/><br/><br/>';
+
+		$fields = [
+			'enabled', 'create_account', 'email', 'apple_pay_domain_set', 'title', 'description', 'testmode', 'test_secret_key',
+			'test_webhook_secret', 'publishable_key', 'secret_key', 'webhook_secret', 'inline_cc_form', 'statement_descriptor', 'capture',
+			'payment_request', 'payment_request_button_type', 'payment_request_button_theme', 'payment_request_button_height', 
+			'payment_request_button_label', 'payment_request_button_branded_type', 'saved_cards', 'logging'];
+
+		$checkfields = ['enabled', 'testmode', 'inline_cc_form', 'capture', 'payment_request', 'saved_cards', 'logging'];
+
+		// var_dump($_POST);
+		// echo '<br/><br/><br/>';
+		foreach ($fields as $field) {
+			if(isset($_POST['woocommerce_stripe_'.$field]) && in_array($field, $checkfields) ){
+				$stripeOptions[$field] = 'yes';
+			}else if(isset($_POST['woocommerce_stripe_'.$field])){
+				$stripeOptions[$field] = $_POST['woocommerce_stripe_'.$field];
+			}else if(($field  == 'create_account') || ($field  == 'email') ){
+				$stripeOptions[$field] = '';			
+			}else{
+				$stripeOptions[$field] = 'no';
+			}
+		}
+		// var_dump($stripeOptions);
+		// wp_die();
+
+		update_site_option( 'general_woocommerce_stripe_settings', $stripeOptions );
+		//woocommerce_stripe_settings
+
+		//I have override different site option table based on the every site
+		$this->updateOptionsThroughOutSites($stripeOptions, 'woocommerce_stripe_settings');
+	 
+		wp_redirect( add_query_arg( array(
+			'page' => 'custom-generic-settings-page',
+			'updated' => true ), network_admin_url('admin.php')
+		));
+	 
+		exit;
+	 
+	}
+
+	public function updateOptionsThroughOutSites($options, $option_key)
 	{
 
 			//Skip first item as it might not availble
@@ -190,14 +242,14 @@ class multisite_general_functions_Admin {
 		foreach ($blogs as $blog) {
 
 			$tableName = $wpdb->prefix.$blog['blog_id'].'_options';
-			$post_id = $wpdb->get_results("SELECT `option_id` FROM $tableName WHERE option_name = 'woocommerce_paypal_settings'", ARRAY_A);
+			$post_id = $wpdb->get_results("SELECT `option_id` FROM $tableName WHERE option_name = '$option_key'", ARRAY_A);
 
 			if(count($post_id) == 0){
 				// echo 'if';
 				$wpdb->insert(
 					"$tableName", 
 					array( 
-						'option_name' => 'woocommerce_paypal_settings', 
+						'option_name' => $option_key, 
 						'option_value' => serialize($options),
 					),
 					array( 
@@ -213,7 +265,7 @@ class multisite_general_functions_Admin {
 				$result = $wpdb->update(
 						"$tableName", 
 						array('option_value' => serialize($options)), 
-						array('option_id' => $post_id[0]['option_id'], 'option_name'=> 'woocommerce_paypal_settings')
+						array('option_id' => $post_id[0]['option_id'], 'option_name'=> $option_key)
 					);
 				// echo $result;
 			}

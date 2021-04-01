@@ -54,6 +54,61 @@
             }
 			// console.log('yes loading');
 		});
+
+		$('#woocommerce_stripe_testmode').on('click', function(){
+            if($(this).prop("checked") == true){
+				$('#woocommerce_stripe_api_details_tbl tbody tr').each(function($i) {
+					if($(this).hasClass('strip_live')){
+						// console.log($(this));
+						$(this).css('display', 'none');
+					}
+					if($(this).hasClass('strip_test')){
+						// console.log($(this));
+						$(this).css('display', 'table-row');
+					}
+					// console.log($i);
+				});
+                // console.log("Checkbox is checked.");
+            }
+            else if($(this).prop("checked") == false){
+				$('#woocommerce_stripe_api_details_tbl tbody tr').each(function($i) {
+					if($(this).hasClass('strip_live')){
+						// console.log($(this));
+						$(this).css('display', 'table-row');
+					}
+					if($(this).hasClass('strip_test')){
+						// console.log($(this));
+						$(this).css('display', 'none');
+					}
+					// console.log($i);
+				});
+                // console.log("Checkbox is unchecked.");
+            }
+			// console.log('yes loading');
+		});
+
+		$( "#woocommerce_stripe_payment_request_button_type" ).change(function() {
+			if($(this).val() == 'branded'){
+				$('#woocommerce_stripe_api_details_tbl tbody tr#branded').css('display', 'table-row');
+				$('#woocommerce_stripe_api_details_tbl tbody tr#custom').css('display', 'none');
+			}else if($(this).val() == 'custom'){
+				$('#woocommerce_stripe_api_details_tbl tbody tr#branded').css('display', 'none');
+				$('#woocommerce_stripe_api_details_tbl tbody tr#custom').css('display', 'table-row');
+			}else{
+				$('#woocommerce_stripe_api_details_tbl tbody tr#branded').css('display', 'none');
+				$('#woocommerce_stripe_api_details_tbl tbody tr#custom').css('display', 'none');
+			}
+		});
+
+		if($('#myTab').length){
+			$('#myTab .nav-link').on('click', function(){
+				$('#myTab .nav-link').removeClass('active');
+				$('#myTabContent .tab-pane').removeClass('active show');
+				var selectedtab = $(this).attr('href');
+				$(this).addClass('active');
+				$(selectedtab).addClass('active show');
+			});
+		}
 	});
 
 })( jQuery );
