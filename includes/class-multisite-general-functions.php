@@ -159,6 +159,8 @@ class multisite_general_functions {
 		$this->loader->add_filter( 'network_admin_menu', $plugin_admin, 'general_functions_new_menu_items', 1 );
 		$this->loader->add_filter( 'network_admin_edit_paypalAction', $plugin_admin, 'paypal_save_settings', 1 );
 		$this->loader->add_filter( 'network_admin_edit_stripeAction', $plugin_admin, 'stripe_save_settings', 1 );
+		$this->loader->add_filter( 'network_admin_edit_languageAction', $plugin_admin, 'language_save_settings', 1 );
+		$this->loader->add_filter( 'network_admin_edit_currencyAction', $plugin_admin, 'currency_save_settings', 1 );
 		//
 		//https://rudrastyh.com/wordpress-multisite/options-pages.html
 		//

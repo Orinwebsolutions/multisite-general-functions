@@ -104,14 +104,6 @@ class multisite_general_functions_Admin {
 
 	public function general_functions_new_menu_items()
 	{
-		// add_submenu_page(
-		// 	'themes.php', // Parent element
-		// 	'Custom generic setting', // Text in browser title bar
-		// 	'Custom generic setting', // Text to be displayed in the menu.
-		// 	'manage_options', // Capability
-		// 	'custom-generic-settings-page', // Page slug, will be displayed in URL
-		// 	array($this, 'custom_generic_settings_page') // Callback function which displays the page
-		// );
 	 
 		add_menu_page(
 			'Generic setting',
@@ -122,7 +114,21 @@ class multisite_general_functions_Admin {
 			'dashicons-admin-generic', // Icon
 			100 // Position of the menu item in the menu.
 		);
+
+		add_submenu_page(
+			'custom-generic-settings-page', // Parent element
+			'Language & currency setting', // Text in browser title bar
+			'Language & currency setting', // Text to be displayed in the menu.
+			'manage_options', // Capability
+			'custom-generic-lang-cur-page', // Page slug, will be displayed in URL
+			array($this, 'custom_generic_lang_cur_page') // Callback function which displays the page
+		);
 	 
+	}
+
+	public function custom_generic_lang_cur_page()
+	{
+		require_once "partials/multisite-general-functions-admin-lang-currency.php";
 	}
 
 	public function custom_generic_settings_page()
@@ -143,8 +149,6 @@ class multisite_general_functions_Admin {
 
 		$checkfields = ['enabled', 'testmode', 'debug', 'ipn_notification', 'send_shipping', 'address_override'];
 
-		// var_dump($_POST);
-		// echo '<br/><br/><br/>';
 		foreach ($fields as $field) {
 			if(isset($_POST['woocommerce_paypal_'.$field]) && in_array($field, $checkfields) ){
 				$ppOptions[$field] = 'yes';
@@ -154,8 +158,6 @@ class multisite_general_functions_Admin {
 				$ppOptions[$field] = 'no';
 			}
 		}
-		// var_dump($ppOptions);
-		// wp_die();
 
 		update_site_option( 'general_woocommerce_paypal_settings', $ppOptions );
 
@@ -176,9 +178,6 @@ class multisite_general_functions_Admin {
 		check_admin_referer( 'Stripe-network-validate' ); // Nonce security check
 
 		$stripeOptions = [];
-		
-		// var_dump($_POST);
-		// echo '<br/><br/><br/>';
 
 		$fields = [
 			'enabled', 'create_account', 'email', 'apple_pay_domain_set', 'title', 'description', 'testmode', 'test_secret_key',
@@ -188,8 +187,6 @@ class multisite_general_functions_Admin {
 
 		$checkfields = ['enabled', 'testmode', 'inline_cc_form', 'capture', 'payment_request', 'saved_cards', 'logging'];
 
-		// var_dump($_POST);
-		// echo '<br/><br/><br/>';
 		foreach ($fields as $field) {
 			if(isset($_POST['woocommerce_stripe_'.$field]) && in_array($field, $checkfields) ){
 				$stripeOptions[$field] = 'yes';
@@ -201,8 +198,6 @@ class multisite_general_functions_Admin {
 				$stripeOptions[$field] = 'no';
 			}
 		}
-		// var_dump($stripeOptions);
-		// wp_die();
 
 		update_site_option( 'general_woocommerce_stripe_settings', $stripeOptions );
 		//woocommerce_stripe_settings
@@ -219,24 +214,67 @@ class multisite_general_functions_Admin {
 	 
 	}
 
+	public function language_save_settings()
+	{
+		check_admin_referer( 'language-network-validate' ); // Nonce security check
+
+		$langOptions;
+
+		$fields = ['multisite_lang'];
+
+		foreach ($fields as $field) {
+			if(isset($_POST[$field]) && $_POST[$field]){
+				$langOptions = $_POST[$field];	
+			}else{
+				$langOptions = 'en';			
+			}
+		}
+
+
+		update_site_option( 'general_WPLANG_settings', $langOptions );
+
+		//I have override different site option table based on the every site
+		$this->updateOptionsThroughOutSites($langOptions, 'WPLANG');
+	 
+		wp_redirect( add_query_arg( array(
+			'page' => 'custom-generic-lang-cur-page',
+			'updated' => true ), network_admin_url('admin.php')
+		));
+	 
+		exit;
+
+	}
+
+	public function currency_save_settings()
+	{
+		check_admin_referer( 'currency-network-validate' ); // Nonce security check
+
+		$currencyOption;
+
+		$fields = ['general_currency'];
+
+		foreach ($fields as $field) {
+			if(isset($_POST[$field]) && $_POST[$field]){
+				$currencyOption = $_POST[$field];	
+			}
+		}
+
+		update_site_option( 'general_woocommerce_currency', $currencyOption );
+
+		//I have override different site option table based on the every site
+		$this->updateOptionsThroughOutSites($currencyOption, 'woocommerce_currency');
+	 
+		wp_redirect( add_query_arg( array(
+			'page' => 'custom-generic-lang-cur-page',
+			'updated' => true ), network_admin_url('admin.php')
+		));
+	 
+		exit;
+
+	}
+
 	public function updateOptionsThroughOutSites($options, $option_key)
 	{
-
-			//Skip first item as it might not availble
-			//Need to get option id and assign to update else add the option value
-			//woocommerce_swish_pay_gateway_settings
-
-// woocommerce_paypal_settings
-
-// general_woocommerce_paypal_settings
-//option_name
-//option_id
-
-// 2_options
-// {site_id}_options
-
-
-
 		global $wpdb;
         $blogs = $wpdb->get_results( "SELECT blog_id FROM {$wpdb->prefix}blogs", ARRAY_A);
 		foreach ($blogs as $blog) {

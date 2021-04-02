@@ -42,7 +42,7 @@ $installed_payment_methods = WC()->payment_gateways->payment_gateways();
     <form method="post" action="edit.php?action=paypalAction">
         <?php wp_nonce_field( 'PP-network-validate' );?>
         <?php $generalOptions = get_site_option( 'general_woocommerce_paypal_settings')?get_site_option( 'general_woocommerce_paypal_settings'):''; ?>
-        <h2>PayPal Standard<small class="wc-admin-breadcrumb">
+        <h2>PayPal Standard</h2>
         <table class="form-table">
             <tbody>
                 <tr valign="top">
@@ -383,7 +383,7 @@ $installed_payment_methods = WC()->payment_gateways->payment_gateways();
             </tbody>
         </table>
         <h3 class="wc-settings-sub-title " id="woocommerce_stripe_webhook">Webhook Endpoints</h3>
-        <p>You must add the following webhook endpoint <strong style="background-color:#ddd">&nbsp;https://frisorateljen.moreflotest.devlocal/?wc-api=wc_stripe&nbsp;</strong> to your <a href="https://dashboard.stripe.com/account/webhooks" target="_blank">Stripe account settings</a>. This will enable you to receive notifications on the charge statuses.</p>
+        <p>You must add the following webhook endpoint <strong style="background-color:#ddd">&nbsp;https://{subdomain-names}/?wc-api=wc_stripe&nbsp;</strong> to your <a href="https://dashboard.stripe.com/account/webhooks" target="_blank">Stripe account settings</a>. This will enable you to receive notifications on the charge statuses.</p>
         <table class="form-table" id="woocommerce_stripe_api_details_tbl">
             <tbody>
                 <tr valign="top">
@@ -395,7 +395,7 @@ $installed_payment_methods = WC()->payment_gateways->payment_gateways();
                             <legend class="screen-reader-text"><span>Test mode</span></legend>
                             <label for="woocommerce_stripe_testmode">
                             <input class="" type="checkbox" name="woocommerce_stripe_testmode" id="woocommerce_stripe_testmode" style="" value="yes"
-                            <?php isset($generalStripeOpt['testmode']) ? checked('yes', $generalStripeOpt['testmode'] ):''; ?>> Enable Test Mode</label><br>
+                            <?php isset($generalStripeOpt['testmode']) ? checked('yes', $generalStripeOpt['testmode'] ):''; ?> checked="checked"> Enable Test Mode</label><br>
                         </fieldset>
                     </td>
                 </tr>
@@ -530,11 +530,11 @@ $installed_payment_methods = WC()->payment_gateways->payment_gateways();
                         <fieldset>
                             <legend class="screen-reader-text"><span>Payment Request Button Type</span></legend>
                             <select class="select " name="woocommerce_stripe_payment_request_button_type" id="woocommerce_stripe_payment_request_button_type" style="">
-                                <option value="default">Default</option>
-                                <option value="buy" selected="selected">Buy</option>
-                                <option value="donate">Donate</option>
-                                <option value="branded">Branded</option>
-                                <option value="custom">Custom</option>
+                                <option <?php isset($generalStripeOpt['payment_request_button_type']) ? selected( $generalStripeOpt['payment_request_button_type'], 'default' ):''; ?>  value="default">Default</option>
+                                <option <?php isset($generalStripeOpt['payment_request_button_type']) ? selected( $generalStripeOpt['payment_request_button_type'], 'buy' ):''; ?> value="buy">Buy</option>
+                                <option <?php isset($generalStripeOpt['payment_request_button_type']) ? selected( $generalStripeOpt['payment_request_button_type'], 'donate' ):''; ?> value="donate">Donate</option>
+                                <option <?php isset($generalStripeOpt['payment_request_button_type']) ? selected( $generalStripeOpt['payment_request_button_type'], 'branded' ):''; ?> value="branded">Branded</option>
+                                <option <?php isset($generalStripeOpt['payment_request_button_type']) ? selected( $generalStripeOpt['payment_request_button_type'], 'custom' ):''; ?> value="custom">Custom</option>
                             </select>
                         </fieldset>
                     </td>
@@ -547,9 +547,9 @@ $installed_payment_methods = WC()->payment_gateways->payment_gateways();
                         <fieldset>
                             <legend class="screen-reader-text"><span>Payment Request Button Theme</span></legend>
                             <select class="select " name="woocommerce_stripe_payment_request_button_theme" id="woocommerce_stripe_payment_request_button_theme" style="">
-                                <option value="dark" selected="selected">Dark</option>
-                                <option value="light">Light</option>
-                                <option value="light-outline">Light-Outline</option>
+                                <option <?php isset($generalStripeOpt['payment_request_button_theme']) ? selected( $generalStripeOpt['payment_request_button_theme'], 'dark' ):''; ?> value="dark">Dark</option>
+                                <option <?php isset($generalStripeOpt['payment_request_button_theme']) ? selected( $generalStripeOpt['payment_request_button_theme'], 'light' ):''; ?> value="light">Light</option>
+                                <option <?php isset($generalStripeOpt['payment_request_button_theme']) ? selected( $generalStripeOpt['payment_request_button_theme'], 'light-outline' ):''; ?> value="light-outline">Light-Outline</option>
                             </select>
                         </fieldset>
                     </td>
@@ -561,7 +561,8 @@ $installed_payment_methods = WC()->payment_gateways->payment_gateways();
                     <td class="forminp">
                         <fieldset>
                             <legend class="screen-reader-text"><span>Payment Request Button Height</span></legend>
-                            <input class="input-text regular-input " type="text" name="woocommerce_stripe_payment_request_button_height" id="woocommerce_stripe_payment_request_button_height" style="" value="44" placeholder="">
+                            <input class="input-text regular-input " type="text" name="woocommerce_stripe_payment_request_button_height" id="woocommerce_stripe_payment_request_button_height" style="" 
+                            value="<?php echo isset($generalStripeOpt['payment_request_button_height'])? esc_attr( $generalStripeOpt['payment_request_button_height']):'44'; ?>" placeholder="">
                         </fieldset>
                     </td>
                 </tr>
@@ -572,7 +573,8 @@ $installed_payment_methods = WC()->payment_gateways->payment_gateways();
                     <td class="forminp">
                         <fieldset>
                             <legend class="screen-reader-text"><span>Payment Request Button Label</span></legend>
-                            <input class="input-text regular-input " type="text" name="woocommerce_stripe_payment_request_button_label" id="woocommerce_stripe_payment_request_button_label" style="" value="Buy now" placeholder="">
+                            <input class="input-text regular-input " type="text" name="woocommerce_stripe_payment_request_button_label" id="woocommerce_stripe_payment_request_button_label" style="" 
+                            value="<?php echo isset($generalStripeOpt['payment_request_button_label'])? esc_attr( $generalStripeOpt['payment_request_button_label']):'Buy now'; ?>" placeholder="">
                         </fieldset>
                     </td>
                 </tr>
@@ -584,8 +586,8 @@ $installed_payment_methods = WC()->payment_gateways->payment_gateways();
                         <fieldset>
                             <legend class="screen-reader-text"><span>Payment Request Branded Button Label Format</span></legend>
                             <select class="select " name="woocommerce_stripe_payment_request_button_branded_type" id="woocommerce_stripe_payment_request_button_branded_type" style="">
-                                <option value="short">Logo only</option>
-                                <option value="long" selected="selected">Text and logo</option>
+                                <option <?php isset($generalStripeOpt['payment_request_button_branded_type']) ? selected( $generalStripeOpt['payment_request_button_branded_type'], 'short' ):''; ?> value="short">Logo only</option>
+                                <option <?php isset($generalStripeOpt['payment_request_button_branded_type']) ? selected( $generalStripeOpt['payment_request_button_branded_type'], 'long' ):''; ?> value="long">Text and logo</option>
                             </select>
                         </fieldset>
                     </td>
@@ -598,7 +600,8 @@ $installed_payment_methods = WC()->payment_gateways->payment_gateways();
                         <fieldset>
                             <legend class="screen-reader-text"><span>Saved Cards</span></legend>
                             <label for="woocommerce_stripe_saved_cards">
-                            <input class="" type="checkbox" name="woocommerce_stripe_saved_cards" id="woocommerce_stripe_saved_cards" style="" value="yes" checked="checked"> Enable Payment via Saved Cards</label><br>
+                            <input class="" type="checkbox" name="woocommerce_stripe_saved_cards" id="woocommerce_stripe_saved_cards" style="" 
+                            <?php isset($generalStripeOpt['saved_cards']) ? checked('yes', $generalStripeOpt['saved_cards'] ):''; ?> checked="checked" value="yes"> Enable Payment via Saved Cards</label><br>
                         </fieldset>
                     </td>
                 </tr>
@@ -610,7 +613,8 @@ $installed_payment_methods = WC()->payment_gateways->payment_gateways();
                         <fieldset>
                             <legend class="screen-reader-text"><span>Logging</span></legend>
                             <label for="woocommerce_stripe_logging">
-                            <input class="" type="checkbox" name="woocommerce_stripe_logging" id="woocommerce_stripe_logging" style="" value="yes"> Log debug messages</label><br>
+                            <input class="" type="checkbox" name="woocommerce_stripe_logging" id="woocommerce_stripe_logging" style=""
+                            <?php isset($generalStripeOpt['logging']) ? checked('yes', $generalStripeOpt['logging'] ):''; ?> value="yes"> Log debug messages</label><br>
                         </fieldset>
                     </td>
                 </tr>
