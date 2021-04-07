@@ -100,4 +100,27 @@ class multisite_general_functions_Public {
 
 	}
 
+	public function register_shortcodes()
+	{
+		add_shortcode('unified-mp3-logo', array( $this , 'common_logo' ));
+	}
+
+	public function common_logo($atts)
+	{
+		extract(shortcode_atts(array(
+			'posts' => 1,
+		), $atts));
+		if(get_option( 'general_logo' )){
+			$return_logo;
+			ob_start();
+			$return_logo = htmlspecialchars_decode(stripcslashes(get_option( 'general_logo' )));
+			ob_get_clean();
+
+			return $return_logo;
+		}else{
+			return false;
+		}
+	}
+
+
 }

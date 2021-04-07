@@ -42,7 +42,7 @@ $installed_payment_methods = WC()->payment_gateways->payment_gateways();
     <form method="post" action="edit.php?action=paypalAction">
         <?php wp_nonce_field( 'PP-network-validate' );?>
         <?php $generalOptions = get_site_option( 'general_woocommerce_paypal_settings')?get_site_option( 'general_woocommerce_paypal_settings'):''; ?>
-        <h2>PayPal Standard</h2>
+        <h2>PayPal Magazada Custom Payments</h2>
         <table class="form-table">
             <tbody>
                 <tr valign="top">
@@ -339,7 +339,7 @@ $installed_payment_methods = WC()->payment_gateways->payment_gateways();
     <form method="post" action="edit.php?action=stripeAction">
         <?php wp_nonce_field( 'Stripe-network-validate' );?>
         <?php $generalStripeOpt = get_site_option( 'general_woocommerce_stripe_settings')?get_site_option( 'general_woocommerce_stripe_settings'):''; ?>
-        <h2>Stripe</h2>
+        <h2>Stripe Magazada Custom Payments</h2>
         <p>Stripe works by adding payment fields on the checkout and then sending the details to Stripe for verification. <a href="https://dashboard.stripe.com/register" target="_blank">Sign up</a> for a Stripe account, and <a href="https://dashboard.stripe.com/account/apikeys" target="_blank">get your Stripe account keys</a>.</p>
         <table class="form-table">
             <tbody>

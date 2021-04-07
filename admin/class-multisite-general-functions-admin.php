@@ -123,6 +123,15 @@ class multisite_general_functions_Admin {
 			'custom-generic-lang-cur-page', // Page slug, will be displayed in URL
 			array($this, 'custom_generic_lang_cur_page') // Callback function which displays the page
 		);
+
+		add_submenu_page(
+			'custom-generic-settings-page', // Parent element
+			'General logo', // Text in browser title bar
+			'General logo', // Text to be displayed in the menu.
+			'manage_options', // Capability
+			'custom-generic-logo-page', // Page slug, will be displayed in URL
+			array($this, 'custom_generic_logo_page') // Callback function which displays the page
+		);
 	 
 	}
 
@@ -134,6 +143,11 @@ class multisite_general_functions_Admin {
 	public function custom_generic_settings_page()
 	{
 		require_once "partials/multisite-general-functions-admin-display.php";
+	}
+
+	public function custom_generic_logo_page()
+	{
+		require_once "partials/multisite-general-functions-admin-general-logo.php";
 	}
 
 	public function paypal_save_settings(){
@@ -271,6 +285,35 @@ class multisite_general_functions_Admin {
 	 
 		exit;
 
+	}
+
+	public function genlogo_save_settings()
+	{
+		check_admin_referer( 'general-logo-network-validate' ); // Nonce security check
+
+		$genlogoOptions;
+
+		$fields = ['general_unified_logo'];
+
+		foreach ($fields as $field) {
+			if(isset($_POST[$field]) && $_POST[$field]){
+				$genlogoOptions = htmlspecialchars($_POST[$field][0]);	
+			}
+		}
+
+		// if($genlogoOptions){
+		update_site_option( 'general_logo_settings', $genlogoOptions );
+
+		//I have override different site option table based on the every site
+		$this->updateOptionsThroughOutSites($genlogoOptions, 'general_logo');
+	
+		wp_redirect( add_query_arg( array(
+			'page' => 'custom-generic-logo-page',
+			'updated' => true ), network_admin_url('admin.php')
+		));
+	
+		exit;
+		// }
 	}
 
 	public function updateOptionsThroughOutSites($options, $option_key)

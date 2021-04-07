@@ -161,6 +161,7 @@ class multisite_general_functions {
 		$this->loader->add_filter( 'network_admin_edit_stripeAction', $plugin_admin, 'stripe_save_settings', 1 );
 		$this->loader->add_filter( 'network_admin_edit_languageAction', $plugin_admin, 'language_save_settings', 1 );
 		$this->loader->add_filter( 'network_admin_edit_currencyAction', $plugin_admin, 'currency_save_settings', 1 );
+		$this->loader->add_filter( 'network_admin_edit_genLogoAction', $plugin_admin, 'genlogo_save_settings', 1 );
 		//
 		//https://rudrastyh.com/wordpress-multisite/options-pages.html
 		//
@@ -184,6 +185,7 @@ class multisite_general_functions {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+		$this->loader->add_action( 'init', $plugin_public, 'register_shortcodes', 1 );
 
 	}
 

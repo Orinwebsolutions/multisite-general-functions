@@ -2,3 +2,6 @@
  * All of the CSS for your public-facing functionality should be
  * included in this file.
  */
+ .general-logo .general-logo-theme > *{
+     width: 150px;
+ }
